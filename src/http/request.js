@@ -1,4 +1,4 @@
-import {parseRequest} from './utils';
+import { parseRequest } from "./utils.js";
 
 export default class HTTPRequest {
 	constructor(rawReq) {
@@ -10,16 +10,16 @@ export default class HTTPRequest {
 			this.headers = packet.headers;
 			this.payload = packet.payload;
 		} else {
-			this.method = 'GET';
-			this.path = '/';
-			this.httpVersion = 'HTTP/1.1';
+			this.method = "GET";
+			this.path = "/";
+			this.httpVersion = "HTTP/1.1";
 			this.headers = {};
-			this.payload = '';
+			this.payload = "";
 		}
 	}
 
 	_parseRequest(rawReq) {
-		const {firstLineParts, ...request} = parseRequest(rawReq);
+		const { firstLineParts, ...request } = parseRequest(rawReq);
 
 		request.method = firstLineParts[0];
 		request.path = firstLineParts[1];
@@ -29,7 +29,7 @@ export default class HTTPRequest {
 	}
 
 	toString() {
-		let result = '';
+		let result = "";
 
 		result += `${this.method} ${this.path} ${this.httpVersion}\r\n`;
 
@@ -37,7 +37,7 @@ export default class HTTPRequest {
 			result += `${header}: ${this.headers[header]}\r\n`;
 		}
 
-		result += '\r\n';
+		result += "\r\n";
 		result += this.payload;
 
 		return result;

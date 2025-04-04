@@ -1,4 +1,4 @@
-import {parseRequest} from './utils';
+import { parseRequest } from "./utils.js";
 
 export default class HTTPResponse {
 	constructor(rawReq) {
@@ -10,16 +10,16 @@ export default class HTTPResponse {
 			this.headers = packet.headers;
 			this.payload = packet.payload;
 		} else {
-			this.httpVersion = 'HTTP/1.1';
+			this.httpVersion = "HTTP/1.1";
 			this.statusCode = 200;
-			this.statusMessgae = 'OK';
+			this.statusMessgae = "OK";
 			this.headers = {};
-			this.payload = '';
+			this.payload = "";
 		}
 	}
 
 	_parseResponse(rawRes) {
-		const {firstLineParts, ...request} = parseRequest(rawRes);
+		const { firstLineParts, ...request } = parseRequest(rawRes);
 
 		request.httpVersion = firstLineParts[0];
 		request.statusCode = firstLineParts[1];
@@ -29,7 +29,7 @@ export default class HTTPResponse {
 	}
 
 	toString() {
-		let result = '';
+		let result = "";
 
 		result += `${this.httpVersion} ${this.statusCode} ${this.statusMessgae}\r\n`;
 
@@ -37,7 +37,7 @@ export default class HTTPResponse {
 			result += `${header}: ${this.headers[header]}\r\n`;
 		}
 
-		result += '\r\n';
+		result += "\r\n";
 		result += this.payload;
 
 		return result;

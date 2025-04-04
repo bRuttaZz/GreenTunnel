@@ -1,9 +1,10 @@
-import LRU from 'lru-cache';
-import { isIP } from 'validator';
-import getLogger from '../logger';
-import config from '../config';
+import LRU from "lru-cache";
+import validator from "validator";
+import getLogger from "../logger.js";
+import config from "../config.js";
 
-const logger = getLogger('dns');
+const { isIP } = validator;
+const logger = getLogger("dns");
 
 function _isIP(v) {
 	return v && isIP(v);
@@ -25,7 +26,7 @@ export default class BaseDNS {
 
 			ip = hostname;
 			for (let depth = 0; !_isIP(ip) && depth < 5; depth++) {
-				ip = await this._lookup(ip).catch(error => {
+				ip = await this._lookup(ip).catch((error) => {
 					logger.debug(error);
 					return ip;
 				});
@@ -43,4 +44,3 @@ export default class BaseDNS {
 		}
 	}
 }
-

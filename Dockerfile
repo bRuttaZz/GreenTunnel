@@ -19,11 +19,11 @@ COPY bin ./bin
 
 EXPOSE 8000/tcp
 
-CMD node ./bin/gt.js \
-	--verbose $VERBOSE \
-	--ip 0.0.0.0 \
-	--port $PORT \
-	--silent $SILENT \
-	--system-proxy false \
-	--dns-type $DNS_TYPE \
-	--dns-server $DNS_SERVER
+CMD node ./bin/gt.cjs \
+    --verbose $VERBOSE \
+    --ip 0.0.0.0 \
+    --port $PORT \
+    --silent $SILENT \
+    --system-proxy false \
+    --dns-type $DNS_TYPE \
+    --dns-server $DNS_SERVER

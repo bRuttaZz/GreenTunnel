@@ -1,14 +1,14 @@
-import net from 'net';
-import { setProxy, unsetProxy } from './utils/system-proxy';
-import handleRequest from './handlers/request';
-import DNSOverTLS from './dns/tls';
-import DNSOverHTTPS from './dns/https';
-import DNSUnencrypted from './dns/unencrypted';
-import config from './config';
-import getLogger from './logger';
-import { appInit } from './utils/analytics';
+import net from "net";
+import { setProxy, unsetProxy } from "./utils/system-proxy.js";
+import handleRequest from "./handlers/request.js";
+import DNSOverTLS from "./dns/tls.js";
+import DNSOverHTTPS from "./dns/https.js";
+import DNSUnencrypted from "./dns/unencrypted.js";
+import config from "./config.js";
+import getLogger from "./logger.js";
+import { appInit } from "./utils/analytics.js";
 
-const logger = getLogger('proxy');
+const logger = getLogger("proxy");
 
 export default class Proxy {
 	constructor(customConfig) {
@@ -20,9 +20,9 @@ export default class Proxy {
 	}
 
 	initDNS() {
-		if (this.config.dns.type === 'https') {
+		if (this.config.dns.type === "https") {
 			this.dns = new DNSOverHTTPS(this.config.dns.server);
-		} else if (this.config.dns.type === 'tls') {
+		} else if (this.config.dns.type === "tls") {
 			this.dns = new DNSOverTLS(this.config.dns.server);
 		} else {
 			this.dns = new DNSUnencrypted(this.config.dns.ip, this.config.dns.port);
@@ -30,23 +30,24 @@ export default class Proxy {
 	}
 
 	async start(options = {}) {
-		options.setProxy = options.setProxy === undefined ? false : options.setProxy;
+		options.setProxy =
+			options.setProxy === undefined ? false : options.setProxy;
 
-		this.server = net.createServer({ pauseOnConnect: true }, clientSocket => {
-			handleRequest(clientSocket, this).catch(err => {
+		this.server = net.createServer({ pauseOnConnect: true }, (clientSocket) => {
+			handleRequest(clientSocket, this).catch((err) => {
 				logger.debug(String(err));
 			});
 		});
 
-		this.server.on('error', err => {
+		this.server.on("error", (err) => {
 			logger.error(err.toString());
 		});
 
-		this.server.on('close', () => {
-			logger.debug('server closed');
+		this.server.on("close", () => {
+			logger.debug("server closed");
 		});
 
-		await new Promise(resolve => {
+		await new Promise((resolve) => {
 			this.server.listen(this.config.port, this.config.ip, () => resolve());
 		});
 
@@ -56,7 +57,7 @@ export default class Proxy {
 		if (options.setProxy) {
 			await setProxy(address, port);
 			this.isSystemProxySet = true;
-			logger.debug('system proxy set');
+			logger.debug("system proxy set");
 		}
 	}
 
@@ -68,7 +69,7 @@ export default class Proxy {
 		if (this.isSystemProxySet) {
 			await unsetProxy();
 			this.isSystemProxySet = false;
-			logger.debug('system proxy unset');
+			logger.debug("system proxy unset");
 		}
 	}
 }

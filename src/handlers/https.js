@@ -1,13 +1,13 @@
-import {URL} from 'url';
-import {bufferToChunks} from '../utils/buffer';
-import {createConnection, closeSocket, tryWrite} from '../utils/socket';
-import HTTPResponse from '../http/response';
-import getLogger from '../logger';
+import { URL } from "url";
+import { bufferToChunks } from "../utils/buffer.js";
+import { createConnection, closeSocket, tryWrite } from "../utils/socket.js";
+import HTTPResponse from "../http/response.js";
+import getLogger from "../logger.js";
 
-const logger = getLogger('https-handler');
+const logger = getLogger("https-handler");
 
 export default async function handleHTTPS(clientSocket, firstChunk, proxy) {
-	const firstLine = firstChunk.toString().split('\r\n')[0];
+	const firstLine = firstChunk.toString().split("\r\n")[0];
 	const requestUrl = `https://${firstLine.split(/\s+/)[1]}`;
 	const url = new URL(requestUrl);
 
@@ -18,49 +18,49 @@ export default async function handleHTTPS(clientSocket, firstChunk, proxy) {
 
 	// -- ServerSocket --
 
-	const serverSocket = await createConnection({host, port}, proxy.dns);
+	const serverSocket = await createConnection({ host, port }, proxy.dns);
 
 	const close = () => {
 		closeSocket(clientSocket);
 		closeSocket(serverSocket);
 	};
 
-	serverSocket.on('data', data => {
+	serverSocket.on("data", (data) => {
 		logger.debug(`[HTTPS] receive from ${url.host} (length: ${data.length})`);
 		tryWrite(clientSocket, data, close);
 	});
 
-	serverSocket.on('end', () => {
+	serverSocket.on("end", () => {
 		logger.debug(`[HTTPS END] server ended ${url.host}`);
 		close();
 	});
 
-	serverSocket.on('error', error => {
+	serverSocket.on("error", (error) => {
 		logger.debug(`[HTTPS ERROR] server error ${error}`);
 		close(error);
 	});
 
 	// -- clientSocket --
 
-	clientSocket.once('data', clientHello => {
+	clientSocket.once("data", (clientHello) => {
 		const chunks = bufferToChunks(clientHello, proxy.config.clientHelloMTU);
 		for (const chunk of chunks) {
 			logger.debug(`[HTTPS HELLO] ${url.host} (length: ${chunk.length})`);
 			tryWrite(serverSocket, chunk, close);
 		}
 
-		clientSocket.on('data', data => {
+		clientSocket.on("data", (data) => {
 			logger.debug(`[HTTPS] send to ${url.host} (length: ${data.length})`);
 			tryWrite(serverSocket, data, close);
 		});
 	});
 
-	clientSocket.on('end', () => {
+	clientSocket.on("end", () => {
 		logger.debug(`[HTTPS END] client ended ${url.host}`);
 		close();
 	});
 
-	clientSocket.on('error', error => {
+	clientSocket.on("error", (error) => {
 		logger.debug(`[HTTPS ERROR] client error ${error}`);
 		close(error);
 	});
@@ -72,7 +72,6 @@ export default async function handleHTTPS(clientSocket, firstChunk, proxy) {
 function getConnectionEstablishedPacket() {
 	const packet = new HTTPResponse();
 	packet.statusCode = 200;
-	packet.statusMessgae = 'Connection Established';
+	packet.statusMessgae = "Connection Established";
 	return packet.toString();
 }
-

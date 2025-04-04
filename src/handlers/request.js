@@ -1,12 +1,12 @@
-import {isStartOfHTTPRequest, isConnectMethod} from '../http/utils';
-import handleHTTP from './http';
-import handleHTTPS from './https';
+import { isStartOfHTTPRequest, isConnectMethod } from "../http/utils.js";
+import handleHTTP from "./http.js";
+import handleHTTPS from "./https.js";
 
 export default async function handleRequest(clientSocket, proxy) {
 	clientSocket.resume();
 
 	return new Promise((resolve, reject) => {
-		clientSocket.once('data', async data => {
+		clientSocket.once("data", async (data) => {
 			try {
 				clientSocket.pause();
 				const strData = data.toString();
@@ -15,12 +15,12 @@ export default async function handleRequest(clientSocket, proxy) {
 					if (isConnectMethod(strData)) {
 						await handleHTTPS(clientSocket, data, proxy);
 					} else if (proxy.config.httpsOnly) {
-						throw new Error('Insecure request blocked: ', strData);
+						throw new Error("Insecure request blocked: ", strData);
 					} else {
 						await handleHTTP(clientSocket, data, proxy);
 					}
 				} else {
-					throw new Error('Unsupported request: ', strData);
+					throw new Error("Unsupported request: ", strData);
 				}
 
 				resolve();

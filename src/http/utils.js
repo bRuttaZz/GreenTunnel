@@ -1,9 +1,9 @@
 export function parseRequest(rawRequest) {
-	const mainParts = rawRequest.split('\r\n\r\n');
+	const mainParts = rawRequest.split("\r\n\r\n");
 	const headersPart = mainParts[0];
 	const payload = mainParts[1];
 
-	const headerLines = headersPart.split('\r\n');
+	const headerLines = headersPart.split("\r\n");
 	const firsLine = headerLines.shift();
 
 	const firstLineParts = firsLine.split(/\s+/);
@@ -12,7 +12,7 @@ export function parseRequest(rawRequest) {
 	return {
 		firstLineParts,
 		headers,
-		payload
+		payload,
 	};
 }
 
@@ -29,7 +29,7 @@ export function parseHeaders(headerLines) {
 
 export function isConnectMethod(rawInput) {
 	const firstWord = rawInput.split(/\s+/)[0];
-	return firstWord.toUpperCase() === 'CONNECT';
+	return firstWord.toUpperCase() === "CONNECT";
 }
 
 export function isStartOfHTTPRequest(rawRequest) {
@@ -40,8 +40,8 @@ export function isStartOfHTTPRequest(rawRequest) {
 	}
 
 	// Like HTTP/1.1 (For http response)
-	const httpWord = firstWord.split('/')[0];
-	if (httpWord.toLowerCase() === 'http') {
+	const httpWord = firstWord.split("/")[0];
+	if (httpWord.toLowerCase() === "http") {
 		return true;
 	}
 
@@ -49,38 +49,37 @@ export function isStartOfHTTPRequest(rawRequest) {
 }
 
 const validMethods = [
-	'DELETE',
-	'GET',
-	'HEAD',
-	'POST',
-	'PUT',
-	'CONNECT',
-	'OPTIONS',
-	'TRACE',
-	'COPY',
-	'LOCK',
-	'MKCOL',
-	'MOVE',
-	'PROPFIND',
-	'PROPPATCH',
-	'SEARCH',
-	'UNLOCK',
-	'BIND',
-	'REBIND',
-	'UNBIND',
-	'ACL',
-	'REPORT',
-	'MKACTIVITY',
-	'CHECKOUT',
-	'MERGE',
-	'M-SEARCH',
-	'NOTIFY',
-	'SUBSCRIBE',
-	'UNSUBSCRIBE',
-	'PATCH',
-	'PURGE',
-	'MKCALENDAR',
-	'LINK',
-	'UNLINK'
+	"DELETE",
+	"GET",
+	"HEAD",
+	"POST",
+	"PUT",
+	"CONNECT",
+	"OPTIONS",
+	"TRACE",
+	"COPY",
+	"LOCK",
+	"MKCOL",
+	"MOVE",
+	"PROPFIND",
+	"PROPPATCH",
+	"SEARCH",
+	"UNLOCK",
+	"BIND",
+	"REBIND",
+	"UNBIND",
+	"ACL",
+	"REPORT",
+	"MKACTIVITY",
+	"CHECKOUT",
+	"MERGE",
+	"M-SEARCH",
+	"NOTIFY",
+	"SUBSCRIBE",
+	"UNSUBSCRIBE",
+	"PATCH",
+	"PURGE",
+	"MKCALENDAR",
+	"LINK",
+	"UNLINK",
 ];
-

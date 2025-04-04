@@ -1,15 +1,17 @@
-import net from 'net';
-import getLogger from '../logger';
+import net from "net";
+import getLogger from "../logger.js";
 
-const logger = getLogger('socket');
+const logger = getLogger("socket");
 
 export async function createConnection(opts, dns) {
 	const ip = await dns.lookup(opts.host);
 
 	const t = new Date();
-	return new Promise(resolve => {
-		const socket = net.createConnection({...opts, host: ip}, () => {
-			logger.debug(`[Socket] connected to ${opts.host} (${ip}) (${new Date() - t} ms)`);
+	return new Promise((resolve) => {
+		const socket = net.createConnection({ ...opts, host: ip }, () => {
+			logger.debug(
+				`[Socket] connected to ${opts.host} (${ip}) (${new Date() - t} ms)`,
+			);
 			resolve(socket);
 		});
 	});
@@ -26,7 +28,7 @@ export function tryWrite(socket, data, onError) {
 }
 
 export function closeSocket(socket) {
-	socket.removeAllListeners('data');
-	socket.removeAllListeners('error');
+	socket.removeAllListeners("data");
+	socket.removeAllListeners("error");
 	socket.end();
 }

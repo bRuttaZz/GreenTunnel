@@ -1,13 +1,13 @@
-import {URL} from 'url';
-import {isStartOfHTTPRequest} from '../http/utils';
-import {createConnection, closeSocket, tryWrite} from '../utils/socket';
-import HTTPRequest from '../http/request';
-import getLogger from '../logger';
+import { URL } from "url";
+import { isStartOfHTTPRequest } from "../http/utils.js";
+import { createConnection, closeSocket, tryWrite } from "../utils/socket.js";
+import HTTPRequest from "../http/request.js";
+import getLogger from "../logger.js";
 
-const logger = getLogger('https-handler');
+const logger = getLogger("https-handler");
 
 export default async function handleHTTP(clientSocket, firstChunk, proxy) {
-	const firstLine = firstChunk.toString().split('\r\n')[0];
+	const firstLine = firstChunk.toString().split("\r\n")[0];
 	const url = new URL(firstLine.split(/\s+/)[1]);
 
 	const host = url.hostname;
@@ -17,7 +17,7 @@ export default async function handleHTTP(clientSocket, firstChunk, proxy) {
 
 	// -- ServerSocket --
 
-	const serverSocket = await createConnection({host, port}, proxy.dns);
+	const serverSocket = await createConnection({ host, port }, proxy.dns);
 
 	const close = () => {
 		closeSocket(clientSocket);
@@ -26,25 +26,25 @@ export default async function handleHTTP(clientSocket, firstChunk, proxy) {
 
 	tryWrite(serverSocket, interceptRequest(firstChunk), close);
 
-	serverSocket.on('data', data => {
+	serverSocket.on("data", (data) => {
 		tryWrite(clientSocket, data, close);
 	});
 
-	serverSocket.on('error', error => {
+	serverSocket.on("error", (error) => {
 		close(error);
 	});
 
-	serverSocket.on('end', () => {
+	serverSocket.on("end", () => {
 		close();
 	});
 
 	// -- clientSocket --
 
-	clientSocket.on('data', data => {
+	clientSocket.on("data", (data) => {
 		tryWrite(serverSocket, interceptRequest(data), close);
 	});
 
-	clientSocket.on('end', () => {
+	clientSocket.on("end", () => {
 		close();
 	});
 
@@ -57,7 +57,7 @@ function interceptRequest(data) {
 	if (isStartOfHTTPRequest(strData)) {
 		const request = new HTTPRequest(strData);
 		request.path = new URL(request.path).pathname;
-		delete request.headers['Proxy-Connection'];
+		delete request.headers["Proxy-Connection"];
 		return request.toString();
 	}
 
